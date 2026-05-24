@@ -144,11 +144,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
+    <ClInclude Include="CreateTaskDialogue.h" />
     <ClInclude Include="MainFrame.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="CreateTaskDialogue.cpp" />
     <ClCompile Include="MainFrame.cpp" />
     <ClCompile Include="User.cpp" />
   </ItemGroup>
