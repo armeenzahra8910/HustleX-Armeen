@@ -6,6 +6,7 @@ wxIMPLEMENT_APP(App);
 
 bool App::OnInit()
 {
+	wxInitAllImageHandlers();
 	MainFrame* mainframe = new MainFrame("Hustle X");
 	mainframe->SetClientSize(1920, 1080);
 	mainframe->Show();

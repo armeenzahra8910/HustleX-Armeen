@@ -2,9 +2,16 @@
 #include <wx/wx.h> 
 #include <wx/simplebook.h>
 #include <wx/listctrl.h>
+#include "CreateTaskDialogue.h"
+#include <wx/stdpaths.h>
+#include <wx/filename.h>
+#include <string>
+#include "TaskDescriptionDialogue.h"
+
 
 MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 { 
+	u1.setContactNo("03331778227");
 
 	// master panels and master sizer.
 	wxPanel* root = new wxPanel(this);
@@ -19,14 +26,23 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 	wxStaticText* welcome_txt = new wxStaticText(upper_panel, wxID_ANY, "Welcome Back USERNAME", wxDefaultPosition); 
 	welcome_txt->SetForegroundColour(wxColor(*wxWHITE)); 
 	welcome_txt->SetFont(heading_font); 
-	wxButton* user_settings = new wxButton(upper_panel, wxID_ANY, "User Settings", wxDefaultPosition, wxDefaultSize); 
-	user_settings->SetOwnForegroundColour(wxColor(*wxWHITE)); 
-	user_settings->SetOwnBackgroundColour(wxColor(98, 255, 100)); 
-	user_settings->SetFont(button_font); user_settings->Refresh(); 
-	user_settings->SetWindowStyle(wxBORDER_NONE); 
+
+
+	wxString path = wxStandardPaths::Get().GetExecutablePath();
+	wxFileName file(path);
+	file.SetFullName("Hustle X Logo.png");
+	wxBitmap bitmap(file.GetFullPath(), wxBITMAP_TYPE_PNG);
+
+	wxBitmapButton* hustleX = new wxBitmapButton(upper_panel, wxID_ANY, bitmap, wxDefaultPosition, wxDefaultSize);
+	hustleX->SetOwnForegroundColour(wxColor(*wxWHITE));
+	hustleX->SetOwnBackgroundColour(wxColor(35, 35, 35));
+	hustleX->SetFont(button_font); 
+	hustleX->Refresh();
+	hustleX->SetWindowStyle(wxBORDER_NONE);
 	wxBoxSizer* box_sizer = new wxBoxSizer(wxHORIZONTAL); 
 	box_sizer->Add(welcome_txt,1, wxLEFT | wxRIGHT, 50); 
-	box_sizer->Add(user_settings); upper_panel->SetSizer(box_sizer); 
+	box_sizer->Add(hustleX);
+	upper_panel->SetSizer(box_sizer);
 	box_sizer->SetSizeHints(this);
 
 	rootsizer->Add(upper_panel, 0, wxEXPAND);
@@ -108,16 +124,29 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 		wxStaticText* task_find_heading = new wxStaticText(page1, wxID_ANY, "Find Task : ", wxPoint(30, 30));
 		task_find_heading->SetFont(heading_font);
 		task_find_heading->SetForegroundColour(wxColor(*wxWHITE)); 
-		wxListCtrl* tasks = new wxListCtrl(page1, wxID_ANY, wxPoint(30,70), wxSize(1300, 500));
+
+
+		task_display = new wxListCtrl(page1, wxID_ANY, wxPoint(30,70), wxSize(1300, 500), wxLC_REPORT | wxLC_SINGLE_SEL | wxLB_NEEDED_SB);
+		task_display->InsertColumn(0, "Task Title", wxLIST_FORMAT_LEFT, 200);
+		task_display->InsertColumn(1, "Task Description:", wxLIST_FORMAT_LEFT, 700);
+		task_display->InsertColumn(2, "Task Reward : ", wxLIST_FORMAT_LEFT, 200);
+		task_display->InsertColumn(3, "Address : (Location)", wxLIST_FORMAT_LEFT, 200);
+
+
 		wxButton* refreshButton = new wxButton(page1, wxID_ANY, "Refresh Tasks",  wxPoint(30, 600), wxSize(200, 100));
 		refreshButton->SetFont(button_font);
-
+		wxButton* task_description_button = new wxButton(page1, wxID_ANY, "Task Description", wxPoint(270, 600), wxSize(200, 100));
+		task_description_button->SetFont(button_font);
+		task_description_button->Bind(wxEVT_BUTTON, &MainFrame::descibe_task, this);
 
 	wxPanel* page2 = new wxPanel(book);
+
 	wxPanel* page3 = new wxPanel(book);
+
 	wxPanel* page4 = new wxPanel(book);
-		// Later convert into function.
-		
+		// later convert into function.
+	wxButton* create_task = new wxButton(page4, wxID_ANY, "Create a task", wxPoint(200, 200), wxSize(100, 100));
+	create_task->Bind(wxEVT_BUTTON, &MainFrame::create_task, this);
 
 	book->AddPage(page1, "Task Search");
 	book->AddPage(page2, "Stats");
@@ -141,4 +170,79 @@ MainFrame::MainFrame(const wxString& title) : wxFrame(nullptr, wxID_ANY, title)
 	btn4->Bind(wxEVT_BUTTON, [=](wxCommandEvent&) {
 		book->ChangeSelection(3);
 		});
+}
+
+void MainFrame::create_task(wxCommandEvent& evt)
+{
+	if (this->count_task < 5)
+	{
+		CreateTaskDialogue* task_dialogue = new CreateTaskDialogue("Create a task");
+		task_dialogue->ShowModal();
+
+
+		this->u1.create_task(this->count_task, task_dialogue->get_entered_task_title(), task_dialogue->get_entered_task_desc(),
+			task_dialogue->get_entered_address(), task_dialogue->get_entered_task_price());
+
+		this->u1.setUSER_US(this->count_task, &this->u1);
+		
+		long index = this->task_display->InsertItem(this->task_display->GetItemCount(), this->u1.get_US_task_title(this->count_task));
+
+		//wxString formatted_reward = wxString::Format("",)); // basically for display purposes our task_display 
+		// can only output strings so we are formatting price as string because it is integer.
+
+
+		this->task_display->SetItem(index, 1, this->u1.get_US_task_desc(this->count_task));
+		this->task_display->SetItem(index, 2, std::to_string(this->u1.get_US_task_rew(this->count_task)));
+		this->task_display->SetItem(index, 3, this->u1.get_US_task_address(this->count_task));
+
+		this->count_task++; // later make this count_task variable user dependent not independant.
+		task_dialogue->Destroy();
+	}
+
+	else
+
+	{
+		wxLogMessage("Only 5 tasks are allowed per user. If you want to add another task , wait for your previous tasks to get finished.");
+	}
+
+
+
+}
+
+void MainFrame::descibe_task(wxCommandEvent& evt)
+{
+
+	long selected_Row = this->task_display->GetNextItem(-1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+
+	
+	// DEBUG FOR CHECKING
+	//wxLogMessage("Name : %s", this->task_display->GetItemText(selected_Row, 0));
+
+	//wxLogMessage("Description : %s", this->task_display->GetItemText(selected_Row, 1));
+
+	//wxLogMessage("Reward : %s", this->task_display->GetItemText(selected_Row, 2));
+
+	wxString task_name = this->task_display->GetItemText(selected_Row, 0);
+	wxString task_desc = this->task_display->GetItemText(selected_Row, 1);
+	wxString task_reward = this->task_display->GetItemText(selected_Row, 2);
+	wxString task_address = this->task_display->GetItemText(selected_Row, 3);
+	
+
+	// finding contact number 
+	
+	std::string target;
+	
+	std::string task_name_str = task_name.ToStdString();
+	
+	size_t index = this->u1.give_INDEX_TASKNAME(task_name_str);
+	std::string contact =  this->u1.getUSER_CONTACT(index);
+
+	wxLogMessage(contact);
+
+	wxString task_contact = contact;
+
+	//TaskDescriptionDialogue dialogue("Task Description", task_name, task_desc, task_reward);
+	TaskDescriptionDialogue dialogue("Task", task_name, task_desc, task_reward, task_address, task_contact);
+	dialogue.ShowModal();
+	dialogue.Destroy();
 }

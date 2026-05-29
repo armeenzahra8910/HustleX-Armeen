@@ -146,12 +146,16 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="CreateTaskDialogue.h" />
     <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskDescriptionDialogue.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="CreateTaskDialogue.cpp" />
     <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskDescriptionDialogue.cpp" />
     <ClCompile Include="User.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

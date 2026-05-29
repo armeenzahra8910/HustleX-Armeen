@@ -1,20 +1,10 @@
 #include "Task.h"
-#include "User.h"
+
 Task::Task()
 {
 
 }
 
-void Task::setUser(User* user)
-{
-	this->user = user;
-}
-
-
-std::string Task::get_contact_USER()
-{
-	return this->user->getContactNo();
-}
 
 Task::Task(std::string title, std::string description) :
 	title(title), description(description) {
@@ -30,19 +20,9 @@ void Task::setDescription(std::string description)
 	this->description = description;
 }
 
-void Task::setAddress(std::string address)
+void Task::setDuration(std::string duration)
 {
-	this->address = address;
-}
-
-void Task::setReward(int value)
-{
-	this->task_reward = value;
-}
-
-std::string Task::getAddress()
-{
-	return this->address;
+	this->duration = duration;
 }
 
 std::string Task::getTitle()
@@ -55,9 +35,15 @@ std::string Task::getDescription()
 	return this->description;
 }
 
-int Task::Get_task_reward()
+std::string Task::getDuration()
 {
-	return this->task_reward;
+	return this->duration;
+}
+
+void Task::createTask()
+{
+	//to be developed later.
+
 }
 
 bool Task::getState()

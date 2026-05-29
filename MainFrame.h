@@ -1,6 +1,8 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/font.h>
+#include "User.h"
+#include <wx/listctrl.h>
 class MainFrame : public wxFrame
 {
 	public:
@@ -9,6 +11,11 @@ class MainFrame : public wxFrame
         wxStaticText* welcome_txt;
         wxFont heading_font = wxFont(20, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
         wxFont button_font = wxFont(15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
-
+        void create_task(wxCommandEvent& evt);
+        void descibe_task(wxCommandEvent& evt);
+    private:
+        User u1;
+        int count_task{}; //acts as a index for creating tasks.
+        wxListCtrl* task_display;
 };
 
